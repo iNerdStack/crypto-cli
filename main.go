@@ -1,22 +1,53 @@
-/*
-Copyright © 2021 NERD STACK <isaacajetunmobi@gmail.com>
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-*/
 package main
 
-import "github.com/inerdstack/crypto-cli/cmd"
+import (
+	hashtypes "github.com/inerdstack/crypto-cli/hashtypes"
+
+	"flag"
+	"fmt"
+	"os"
+)
+
+var (
+	HelpMessage string = `expected a hashtype arg 'md4', 'md5', 'sha1','sha512':
+	Example: crypto-cli md5 --text="word";
+  `
+)
 
 func main() {
-	cmd.Execute()
+
+	md5Cmd := flag.NewFlagSet("md5", flag.ExitOnError)
+	md5Name := md5Cmd.String("text", "", "a string")
+
+	md4Cmd := flag.NewFlagSet("md4", flag.ExitOnError)
+	md4Name := md4Cmd.String("text", "", "a string")
+
+	sha1Cmd := flag.NewFlagSet("sha1", flag.ExitOnError)
+	sha1Name := sha1Cmd.String("text", "", "a string")
+
+	sha512Cmd := flag.NewFlagSet("sha512", flag.ExitOnError)
+	sha512Name := sha512Cmd.String("text", "", "a string")
+
+	if len(os.Args) < 2 {
+		fmt.Println(HelpMessage)
+		os.Exit(1)
+	}
+
+	switch os.Args[1] {
+	case "md4":
+		md4Cmd.Parse(os.Args[2:])
+		fmt.Println(hashtypes.MD4Hash(*md4Name))
+	case "md5":
+		md5Cmd.Parse(os.Args[2:])
+		fmt.Println(hashtypes.MD5Hash(*md5Name))
+	case "sha1":
+		sha1Cmd.Parse(os.Args[2:])
+		fmt.Println(hashtypes.SHA1Hash(*sha1Name))
+	case "sha512":
+		sha512Cmd.Parse(os.Args[2:])
+		fmt.Println(hashtypes.SHA512Hash(*sha512Name))
+	default:
+		fmt.Println(HelpMessage)
+		os.Exit(1)
+	}
 }
